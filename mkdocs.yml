@@ -1,0 +1,5 @@
+site_name: Orange's Note
+nav:
+    - Home: index.md
+    - About: about.md
+theme: readthedocs

@@ -2,4 +2,8 @@ site_name: Orange's Note
 nav:
     - Home: index.md
     - About: about.md
+    - NoteBook:
+        - '逻辑回归与线性回归': 'algorithm/model_base.md'
+
 theme: readthedocs
+

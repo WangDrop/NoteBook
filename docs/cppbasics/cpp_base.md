@@ -194,8 +194,83 @@ String::~String() {
 * [数据结构与算法学习攻略](https://github.com/youngyangyang04/leetcode-master)
     * TODO
 
-# 设计模式
+* 红黑树
 
+  * 红黑树的特征是什么？
+    1. 节点是红色或黑色。
+    2. 根是黑色。
+    3. 所有叶子都是黑色（叶子是 NIL 节点）。
+    4. 每个红色节点必须有两个黑色的子节点。（从每个叶子到根的所有路径上不能有两个连续的红色节点。）（新增节点的父节点必须相同）
+    5. 从任一节点到其每个叶子的所有简单路径都包含相同数目的黑色节点。（新增节点必须为红）
+
+  * 调整
+    1. 变色
+    2. 左旋
+    3. 右旋
+
+# 算法
+### 排序
+排序算法 | 平均时间复杂度 | 最差时间复杂度 | 空间复杂度 | 数据对象稳定性
+---|---|---|---|---
+[冒泡排序](Algorithm/BubbleSort.h) | O(n<sup>2</sup>)|O(n<sup>2</sup>)|O(1)|稳定
+[选择排序](Algorithm/SelectionSort.h) | O(n<sup>2</sup>)|O(n<sup>2</sup>)|O(1)|数组不稳定、链表稳定
+[插入排序](Algorithm/InsertSort.h) | O(n<sup>2</sup>)|O(n<sup>2</sup>)|O(1)|稳定
+[快速排序](Algorithm/QuickSort.h) | O(n*log<sub>2</sub>n) |  O(n<sup>2</sup>) | O(log<sub>2</sub>n) | 不稳定
+[堆排序](Algorithm/HeapSort.cpp) | O(n*log<sub>2</sub>n)|O(n*log<sub>2</sub>n)|O(1)|不稳定
+[归并排序](Algorithm/MergeSort.h) | O(n*log<sub>2</sub>n) | O(n*log<sub>2</sub>n)|O(n)|稳定
+[希尔排序](Algorithm/ShellSort.h) | O(n*log<sup>2</sup>n)|O(n<sup>2</sup>)|O(1)|不稳定
+[计数排序](Algorithm/CountSort.cpp) | O(n+m)|O(n+m)|O(n+m)|稳定
+[桶排序](Algorithm/BucketSort.cpp) | O(n)|O(n)|O(m)|稳定
+[基数排序](Algorithm/RadixSort.h) | O(k*n)|O(n<sup>2</sup>)| |稳定
+
+> * 均按从小到大排列
+> * k：代表数值中的 “数位” 个数
+> * n：代表数据规模
+> * m：代表数据的最大值减最小值
+> * 来自：[wikipedia . 排序算法](https://zh.wikipedia.org/wiki/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95)
+
+### 查找
+查找算法 | 平均时间复杂度 | 空间复杂度 | 查找条件
+---|---|---|---
+[顺序查找](Algorithm/SequentialSearch.h) | O(n) | O(1) | 无序或有序
+[二分查找（折半查找）](Algorithm/BinarySearch.h) | O(log<sub>2</sub>n)| O(1) | 有序
+[插值查找](Algorithm/InsertionSearch.h) | O(log<sub>2</sub>(log<sub>2</sub>n)) | O(1) | 有序
+[斐波那契查找](Algorithm/FibonacciSearch.cpp) | O(log<sub>2</sub>n) | O(1) | 有序
+[哈希查找](DataStructure/HashTable.cpp) | O(1) | O(n) | 无序或有序
+[二叉查找树（二叉搜索树查找）](Algorithm/BSTSearch.h) |O(log<sub>2</sub>n) |   | 
+[红黑树](DataStructure/RedBlackTree.cpp) |O(log<sub>2</sub>n) | |
+2-3树 | O(log<sub>2</sub>n - log<sub>3</sub>n) |   | 
+B树/B+树 |O(log<sub>2</sub>n) |   | 
+
+### 图搜索算法
+图搜索算法 |数据结构| 遍历时间复杂度 | 空间复杂度
+---|---|---|---
+[BFS广度优先搜索](https://zh.wikipedia.org/wiki/%E5%B9%BF%E5%BA%A6%E4%BC%98%E5%85%88%E6%90%9C%E7%B4%A2)|邻接矩阵<br/>邻接链表|O(\|v\|<sup>2</sup>)<br/>O(\|v\|+\|E\|)|O(\|v\|<sup>2</sup>)<br/>O(\|v\|+\|E\|)
+[DFS深度优先搜索](https://zh.wikipedia.org/wiki/%E6%B7%B1%E5%BA%A6%E4%BC%98%E5%85%88%E6%90%9C%E7%B4%A2)|邻接矩阵<br/>邻接链表|O(\|v\|<sup>2</sup>)<br/>O(\|v\|+\|E\|)|O(\|v\|<sup>2</sup>)<br/>O(\|v\|+\|E\|)
+
+### 其他算法
+算法 |思想| 应用
+---|---|---
+[分治法](https://zh.wikipedia.org/wiki/%E5%88%86%E6%B2%BB%E6%B3%95)|把一个复杂的问题分成两个或更多的相同或相似的子问题，直到最后子问题可以简单的直接求解，原问题的解即子问题的解的合并|[循环赛日程安排问题](https://github.com/huihut/interview/tree/master/Problems/RoundRobinProblem)、排序算法（快速排序、归并排序）
+[动态规划](https://zh.wikipedia.org/wiki/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92)|通过把原问题分解为相对简单的子问题的方式求解复杂问题的方法，适用于有重叠子问题和最优子结构性质的问题|[背包问题](https://github.com/huihut/interview/tree/master/Problems/KnapsackProblem)、斐波那契数列
+[贪心法](https://zh.wikipedia.org/wiki/%E8%B4%AA%E5%BF%83%E6%B3%95)|一种在每一步选择中都采取在当前状态下最好或最优（即最有利）的选择，从而希望导致结果是最好或最优的算法|旅行推销员问题（最短路径问题）、最小生成树、哈夫曼编码
+
+### Leetcode Problems
+* [Github . haoel/leetcode](https://github.com/haoel/leetcode)
+* [Github . pezy/LeetCode](https://github.com/pezy/LeetCode)
+
+### 剑指 Offer
+* [Github . zhedahht/CodingInterviewChinese2](https://github.com/zhedahht/CodingInterviewChinese2)
+* [Github . gatieme/CodingInterviews](https://github.com/gatieme/CodingInterviews)
+
+### Cracking the Coding Interview 程序员面试金典
+* [Github . careercup/ctci](https://github.com/careercup/ctci)
+* [牛客网 . 程序员面试金典](https://www.nowcoder.com/ta/cracking-the-coding-interview)
+
+### 牛客网
+* [牛客网 . 在线编程专题](https://www.nowcoder.com/activity/oj)
+
+# 设计模式
 * [C++设计模式](https://github.com/youngyangyang04/DesignPattern)
     * TODO
 * C++单例模式 
@@ -249,6 +324,165 @@ public :
     * 用户态到内核态条件：设备中断，异常（例如缺页），系统调用；
     * 主要区别在于特权级别的不同，能访问的内存空间及对象区别，处理器是否可以抢占等等。
 
+* 进程之间的通信方式以及优缺点
+    * 管道（PIPE）
+        * 有名管道：一种半双工的通信方式，它允许无亲缘关系进程间的通信
+            * 优点：可以实现任意关系的进程间的通信
+            * 缺点：
+                1. 长期存于系统中，使用不当容易出错
+                2. 缓冲区有限
+        * 无名管道：一种半双工的通信方式，只能在具有亲缘关系的进程间使用（父子进程）
+            * 优点：简单方便
+            * 缺点：
+                1. 局限于单向通信 
+                2. 只能创建在它的进程以及其有亲缘关系的进程之间
+                3. 缓冲区有限
+    * 信号量（Semaphore）：一个计数器，可以用来控制多个线程对共享资源的访问
+        * 优点：可以同步进程
+        * 缺点：信号量有限
+    * 信号（Signal）：一种比较复杂的通信方式，用于通知接收进程某个事件已经发生
+    * 消息队列（Message Queue）：是消息的链表，存放在内核中并由消息队列标识符标识
+        * 优点：可以实现任意进程间的通信，并通过系统调用函数来实现消息发送和接收之间的同步，无需考虑同步问题，方便
+        * 缺点：信息的复制需要额外消耗 CPU 的时间，不适宜于信息量大或操作频繁的场合
+    * 共享内存（Shared Memory）：映射一段能被其他进程所访问的内存，这段共享内存由一个进程创建，但多个进程都可以访问
+        * 优点：无须复制，快捷，信息量大
+        * 缺点：
+            1. 通信是通过将共享空间缓冲区直接附加到进程的虚拟地址空间中来实现的，因此进程间的读写操作的同步问题
+            2. 利用内存缓冲区直接交换信息，内存的实体存在于计算机中，只能同一个计算机系统中的诸多进程共享，不方便网络通信
+    * 套接字（Socket）：可用于不同计算机间的进程通信
+        * 优点：
+            1. 传输数据为字节级，传输数据可自定义，数据量小效率高
+            2. 传输数据时间短，性能高
+            3. 适合于客户端和服务器端之间信息实时交互
+            4. 可以加密,数据安全性强
+        * 缺点：需对传输的数据进行解析，转化成应用级的数据。
+
+* 线程之间的通信方式
+    * 锁机制：包括互斥锁/量（mutex）、读写锁（reader-writer lock）、自旋锁（spin lock）、条件变量（condition）
+        * 互斥锁/量（mutex）：提供了以排他方式防止数据结构被并发修改的方法。
+        * 读写锁（reader-writer lock）：允许多个线程同时读共享数据，而对写操作是互斥的。
+        * 自旋锁（spin lock）与互斥锁类似，都是为了保护共享资源。互斥锁是当资源被占用，申请者进入睡眠状态；而自旋锁则循环检测保持者是否已经释放锁。
+        * 条件变量（condition）：可以以原子的方式阻塞进程，直到某个特定条件为真为止。对条件的测试是在互斥锁的保护下进行的。条件变量始终与互斥锁一起使用。
+    * 信号量机制(Semaphore)
+        * 无名线程信号量
+        * 命名线程信号量
+    * 信号机制(Signal)：类似进程间的信号处理
+    * 屏障（barrier）：屏障允许每个线程等待，直到所有的合作线程都达到某一点，然后从该点继续执行。
+
+    线程间的通信目的主要是用于线程同步，所以线程没有像进程通信中的用于数据交换的通信机制  
+
+
+* 进程之间私有和共享的资源
+
+    * 私有：地址空间、堆、全局变量、栈、寄存器
+    * 共享：代码段，公共数据，进程目录，进程 ID
+
+* 线程之间私有和共享的资源
+
+    * 私有：线程栈，寄存器，程序计数器
+    * 共享：堆，地址空间，全局变量，静态变量
+
+
+* 对比
+
+对比维度 | 多进程 | 多线程 | 总结
+---|---|---|---
+数据共享、同步|数据共享复杂，需要用 IPC；数据是分开的，同步简单|因为共享进程数据，数据共享简单，但也是因为这个原因导致同步复杂|各有优势
+内存、CPU|占用内存多，切换复杂，CPU 利用率低|占用内存少，切换简单，CPU 利用率高|线程占优
+创建销毁、切换|创建销毁、切换复杂，速度慢|创建销毁、切换简单，速度很快|线程占优
+编程、调试|编程简单，调试简单|编程复杂，调试复杂|进程占优
+可靠性|进程间不会互相影响|一个线程挂掉将导致整个进程挂掉|进程占优
+分布式|适应于多核、多机分布式；如果一台机器不够，扩展到多台机器比较简单|适应于多核分布式|进程占优
+
+* 优劣
+
+优劣|多进程|多线程
+---|---|---
+优点|编程、调试简单，可靠性较高|创建、销毁、切换速度快，内存、资源占用小
+缺点|创建、销毁、切换速度慢，内存、资源占用大|编程、调试复杂，可靠性较差
+
+* Linux 内核的同步方式
+
+    * 原因：在现代操作系统里，同一时间可能有多个内核执行流在执行，因此内核其实像多进程多线程编程一样也需要一些同步机制来同步各执行单元对共享数据的访问。尤其是在多处理器系统上，更需要一些同步机制来同步不同处理器上的执行单元对共享的数据的访问。
+
+* 同步方式
+    * 原子操作
+    * 信号量（semaphore）
+    * 读写信号量（rw_semaphore）
+    * 自旋锁（spinlock）
+    * 大内核锁（BKL，Big Kernel Lock）
+    * 读写锁（rwlock）
+    * 大读者锁（brlock-Big Reader Lock）
+    * 读-拷贝修改(RCU，Read-Copy Update)
+    * 顺序锁（seqlock）
+
+#### 字节序
+##### 概念
+
+主机字节序又叫 CPU 字节序，其不是由操作系统决定的，而是由 CPU 指令集架构决定的。主机字节序分为两种：
+
+* 大端字节序（Big Endian）：高序字节存储在低位地址，低序字节存储在高位地址，又叫网络字节序
+* 小端字节序（Little Endian）：高序字节存储在高位地址，低序字节存储在低位地址
+
+##### 存储方式
+
+32 位整数 `0x12345678` 是从起始位置为 `0x00` 的地址开始存放，则：
+
+内存地址 | 0x00 | 0x01 | 0x02 | 0x03
+---|---|---|---|---
+大端|12|34|56|78
+小端|78|56|34|12
+
+大端小端图片
+
+![大端序](https://gitee.com/huihut/interview/raw/master/images/CPU-Big-Endian.svg.png)
+![小端序](https://gitee.com/huihut/interview/raw/master/images/CPU-Little-Endian.svg.png)
+
+##### 判断大端小端
+
+判断大端小端
+
+可以这样判断自己 CPU 字节序是大端还是小端：
+
+```cpp
+#include <iostream>
+using namespace std;
+
+int main()
+{
+	int i = 0x12345678;
+
+	if (*((char*)&i) == 0x12)
+		cout << "大端" << endl;
+	else	
+		cout << "小端" << endl;
+
+	return 0;
+}
+```
+
+### 页面置换算法
+
+在地址映射过程中，若在页面中发现所要访问的页面不在内存中，则产生缺页中断。当发生缺页中断时，如果操作系统内存中没有空闲页面，则操作系统必须在内存选择一个页面将其移出内存，以便为即将调入的页面让出空间。而用来选择淘汰哪一页的规则叫做页面置换算法。
+
+#### 分类
+
+* 全局置换：在整个内存空间置换
+* 局部置换：在本进程中进行置换
+
+#### 算法
+
+全局：
+* 工作集算法
+* 缺页率置换算法
+
+局部：
+* 最佳置换算法（OPT）
+* 先进先出置换算法（FIFO）
+* 最近最久未使用（LRU）算法
+* 时钟（Clock）置换算法
+
+
 # 计算机网络
 
 * TCP和UDP区别
@@ -283,6 +517,8 @@ public :
     * 使用signal定时器设置定时处理函数，超时会跳过阻塞的connect
 * keepalive是什么？
     * 为了让在一次TCP连接中多次发送http请求，减少tcp连接建立次数，减少TIME_WAIT状态，提高性能和吞吐
+    
+
 
 # 数据库 
 
@@ -337,6 +573,41 @@ public :
 * Trie树原理 
 * LSM树原理 
 
+## 📏 设计模式
+
+> 各大设计模式例子参考：[CSDN专栏 . C++ 设计模式](https://blog.csdn.net/liang19890820/article/details/66974516) 系列博文
+
+[设计模式工程目录](DesignPattern)
+
+### 单例模式
+
+[单例模式例子](DesignPattern/SingletonPattern)
+
+### 抽象工厂模式
+
+[抽象工厂模式例子](DesignPattern/AbstractFactoryPattern)
+
+### 适配器模式
+
+[适配器模式例子](DesignPattern/AdapterPattern)
+
+### 桥接模式
+
+[桥接模式例子](DesignPattern/BridgePattern)
+
+### 观察者模式
+
+[观察者模式例子](DesignPattern/ObserverPattern)
+
+### 设计模式的六大原则
+
+* 单一职责原则（SRP，Single Responsibility Principle）
+* 里氏替换原则（LSP，Liskov Substitution Principle）
+* 依赖倒置原则（DIP，Dependence Inversion Principle）
+* 接口隔离原则（ISP，Interface Segregation Principle）
+* 迪米特法则（LoD，Law of Demeter）
+* 开放封闭原则（OCP，Open Close Principle）
+
 # 程序员求职
 
 * [简历模板](https://github.com/youngyangyang04/Markdown-Resume-Template)
@@ -360,3 +631,24 @@ public :
 * [fileHttpServer(go语言实现)](https://github.com/youngyangyang04/fileHttpServer)
 * [Sqlgen（shell脚本实现的批量操作mysql）](https://github.com/youngyangyang04/PowerSqlgen)
 * [NosqlAttack （python实现）](https://github.com/youngyangyang04/NoSQLAttack)
+
+## 📝 面试题目经验
+
+* [牛客网 . 2020秋招面经大汇总！（岗位划分）](https://www.nowcoder.com/discuss/205497)
+* [牛客网 . 【备战秋招】2020届秋招备战攻略](https://www.nowcoder.com/discuss/197116)
+* [牛客网 . 2019校招面经大汇总！【每日更新中】](https://www.nowcoder.com/discuss/90907)
+* [牛客网 . 2019校招技术类岗位面经汇总【技术类】](https://www.nowcoder.com/discuss/146655)
+* [牛客网 . 2018校招笔试真题汇总](https://www.nowcoder.com/discuss/68802)
+* [牛客网 . 2017秋季校园招聘笔经面经专题汇总](https://www.nowcoder.com/discuss/12805)
+* [牛客网 . 史上最全2017春招面经大合集！！](https://www.nowcoder.com/discuss/25268)
+* [牛客网 . 面试题干货在此](https://www.nowcoder.com/discuss/57978)
+* [知乎 . 互联网求职路上，你见过哪些写得很好、很用心的面经？最好能分享自己的面经、心路历程。](https://www.zhihu.com/question/29693016)
+* [知乎 . 互联网公司最常见的面试算法题有哪些？](https://www.zhihu.com/question/24964987)
+* [CSDN . 全面整理的C++面试题](http://blog.csdn.net/ljzcome/article/details/574158)
+* [CSDN . 百度研发类面试题（C++方向）](http://blog.csdn.net/Xiongchao99/article/details/74524807?locationNum=6&fps=1)
+* [CSDN . c++常见面试题30道](http://blog.csdn.net/fakine/article/details/51321544)
+* [CSDN . 腾讯2016实习生面试经验（已经拿到offer)](http://blog.csdn.net/onever_say_love/article/details/51223886)
+* [cnblogs . C++面试集锦( 面试被问到的问题 )](https://www.cnblogs.com/Y1Focus/p/6707121.html)
+* [cnblogs . C/C++ 笔试、面试题目大汇总](https://www.cnblogs.com/fangyukuan/archive/2010/09/18/1829871.html)
+* [cnblogs . 常见C++面试题及基本知识点总结（一）](https://www.cnblogs.com/LUO77/p/5771237.html)
+* [segmentfault . C++常见面试问题总结](https://segmentfault.com/a/1190000003745529)

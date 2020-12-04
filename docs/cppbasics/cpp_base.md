@@ -98,6 +98,11 @@ auto fcn2(It beg, It end) -> typename remove_reference<decltype(*beg)>::type {
         * auto_ptr 与 unique_ptr 比较
             1. auto_ptr 可以赋值拷贝，复制拷贝后所有权转移；unqiue_ptr 无拷贝赋值语义，但实现了`move` 语义；
             2. auto_ptr 对象不能管理数组（析构调用 `delete`），unique_ptr 可以管理数组（析构调用 `delete[]` ）；
+        * boost::bind会把shared_ptr指针拷贝一份，无形延长了对象的生存周期，要注意可能导致的内存泄漏问题，这种问题同样可以提供bind一个weak_ptr来解决
+        * shared_ptr有一定的拷贝开销，所以在一个线程最外层函数里面只要有一个shared_ptr，网内存传第时候都可以传递const reference
+        * shared_ptr<void>可以持有任何对象，并且都能安全的释放
+        * 当对后一个指向对象的shared_ptr析构，对象会在同一个线程析构，如果对象析构耗时，可以考虑放到单独线程处理，通过一个BlockQueue<shared_ptr>
+        * 通过的做法是：owner包含child的shared_ptr，child持有owner的weak_ptr
 
 
 
@@ -188,6 +193,12 @@ String::~String() {
 [unordered_multiset](https://github.com/huihut/interview/tree/master/STL#unordered_multiset)|哈希表|插入、删除、查找 O(1) 最差 O(n)|无序|可重复|
 [unordered_map](https://github.com/huihut/interview/tree/master/STL#unordered_map)|哈希表|插入、删除、查找 O(1) 最差 O(n)|无序|不可重复|
 [unordered_multimap](https://github.com/huihut/interview/tree/master/STL#unordered_multimap)|哈希表|插入、删除、查找 O(1) 最差 O(n)|无序|可重复|
+
+* 面向对象
+    * https://github.com/CyC2018/CS-Notes/blob/master/notes/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E6%80%9D%E6%83%B3.md
+
+* 设计模式
+    * https://github.com/CyC2018/CS-Notes/blob/master/notes/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%20-%20%E7%9B%AE%E5%BD%95.md
 
 # 数据结构与算法
 
@@ -314,6 +325,43 @@ public :
 * linux系统的各类同步机制、linux系统的各类异步机制
     * 同步机制：互斥锁，条件变量（生产者消费者问题），读写锁
     * 异步机制：信号
+* mutex使用注意
+    * 尽量使用不可重入的mutex：防止同一个线程内外层函数都能拿到锁修改
+    * 每次调用Guard对象的时候考虑下调用栈上有没有调用过
+    * 不用跨进程的mutex，进程通信使用socket
+    * 加锁解锁保持在同一个线程
+    * PTHREAD_MUTEX_ERROR_CHECK可以用来排查错误
+    * 一般一个程序的线程只会等在condition variable或者epoll_wait上，如果等在了类似__lll_lock_wait，一般就发生了死锁
+    * void print() const __attribute__ ((noinline))可以禁止编译器inline函数，从而看清调用栈：查看线程的bt，先gdb然后thread apply all bt
+    * 了解一下什么是false sharing & cpu cache效应：
+* 条件变量的使用：
+    * 对wait端：
+        * 和mutex一起使用
+        * mutex已经上锁的情况下才能调用wait
+        * 把判断的bool条件和wait放到while循环里面（必须是while循环，防止spurious wakeup）
+    * 对single/broadcast端：
+        * 不一定要在mutex上锁的情况下调用singal
+        * signal之前要修改bool表达式，切要先加锁
+        * signal一般标示资源可用，broadcast一般标示状态变化
+    * 例子：
+```
+void enqueue(int x)
+{
+    MutexLockGuark(lock_);
+    queue.push(x);
+    cond.notify();
+}
+int dequeue()
+{
+    MutexLockGuark(lock_);
+    while (queue.empty())
+    {
+        cond.wait();
+    }
+    assert (!queue.empty());
+    return queue.pop();
+}
+```
 
 # linux 服务器
 * 五种I/O 模式:阻塞I/O,非阻塞 I/O,I/O 多路复用,信号驱动 I/O,异步 I/O
@@ -416,6 +464,10 @@ public :
     * 读-拷贝修改(RCU，Read-Copy Update)
     * 顺序锁（seqlock）
 
+* 协程
+    * 协程是一种轻量级的线程，本质上协程就是用户空间下的线程，如果把线程/进程当作虚拟“CPU”，协程即跑在这个“CPU”上的线程。
+    * 特点：占用的资源更少，所有的切换和调度都发生在用户态，协程叫法来源于多个协程相互协作，是在用户态显示控制切换
+
 #### 字节序
 ##### 概念
 
@@ -517,6 +569,10 @@ int main()
     * 使用signal定时器设置定时处理函数，超时会跳过阻塞的connect
 * keepalive是什么？
     * 为了让在一次TCP连接中多次发送http请求，减少tcp连接建立次数，减少TIME_WAIT状态，提高性能和吞吐
+* 正向代理和反向代理的区别
+    * 正向代理代理的对象是客户端，反向代理代理的对象是服务端，典型的例子就是ssr以及nginx反向代理服务器，正向代理隐藏真实客户端，反向代理隐藏真实服务端
+* 为什么服务器一般都会屏蔽SIGPIPE信号
+    * TCP是全双工的信道, 可以看作两条单工信道, TCP连接两端的两个端点各负责一条。当对端调用close时, 虽然本意是关闭整个两条信道, 但本端只是收到FIN包。按照TCP协议的语义, 表示对端只是关闭了其所负责的那一条单工信道, 仍然可以继续接收数据. 也就是说, 因为TCP协议的限制, 一个端点无法获知对端的socket是调用了close还是shutdown。对一个已经收到FIN包的socket调用read方法, 如果接收缓冲已空, 则返回0, 这就是常说的表示连接关闭. 但第一次对其调用write方法时, 如果发送缓冲没问题, 会返回正确写入(发送)。但发送的报文会导致对端发送RST报文, 因为对端的socket已经调用了close, 完全关闭, 既不发送, 也不接收数据. 所以, 第二次调用write方法(假设在收到RST之后), 会生成SIGPIPE信号, 导致进程退出.
     
 
 
@@ -564,6 +620,62 @@ int main()
         * 所有的叶子结点使用链表相连，便于区间查找和遍历。B树则需要进行每一层的递归遍历。相邻的元素可能在内存中不相邻，所以缓存命中性没有B+树好。
         * b+树的中间节点不保存数据，能容纳更多节点元素。
         * 数据库索引是存储在磁盘上的，考虑到磁盘IO，当数据量大时，不能把整个索引全部加载到内存，只能逐一加载每一个磁盘页（对应索引树的节点）。所以我们要减少IO次数，对于树来说，IO次数就是树的高度，而“矮胖”就是b树的特征之一，m的大小取决于磁盘页的大小。
+* 存储引擎
+    * InnoDB
+        * InnoDB 是 MySQL 默认的事务型存储引擎，只要在需要它不支持的特性时，才考虑使用其他存储引擎。
+        * InnoDB 采用 MVCC 来支持高并发，并且实现了四个标准隔离级别(未提交读、提交读、可重复读、可串行化)。其默认级别时可重复读（REPEATABLE READ），在可重复读级别下，通过 MVCC + Next-Key Locking 防止幻读。
+        * 主索引时聚簇索引，在索引中保存了数据，从而避免直接读取磁盘，因此对主键查询有很高的性能。
+        * InnoDB 内部做了很多优化，包括从磁盘读取数据时采用的可预测性读，能够自动在内存中创建 hash 索引以加速读操作的自适应哈希索引，以及能够加速插入操作的插入缓冲区等。
+        * InnoDB 支持真正的在线热备份，MySQL 其他的存储引擎不支持在线热备份，要获取一致性视图需要停止对所有表的写入，而在读写混合的场景中，停止写入可能也意味着停止读取。
+    * MyISAM
+        * 设计简单，数据以紧密格式存储。对于只读数据，或者表比较小、可以容忍修复操作，则依然可以使用它。
+        * 提供了大量的特性，包括压缩表、空间数据索引等。
+        * 不支持事务。
+        * 不支持行级锁，只能对整张表加锁，读取时会对需要读到的所有表加共享锁，写入时则对表加排它锁。但在表有读取操作的同时，也可以往表中插入新的记录，这被称为并发插入（CONCURRENT INSERT）。
+        * 可以手工或者自动执行检查和修复操作，但是和事务恢复以及崩溃恢复不同，可能导致一些数据丢失，而且修复操作是非常慢的。
+        * 如果指定了 DELAY_KEY_WRITE 选项，在每次修改执行完成时，不会立即将修改的索引数据写入磁盘，而是会写到内存中的键缓冲区，只有在清理键缓冲区或者关闭表的时候才会将对应的索引块写入磁盘。这种方式可以极大的提升写入性能，但是在数据库或者主机崩溃时会造成索引损坏，需要执行修复操作。
+* InnoDB 和 MyISAM 的比较
+        * 事务：InnoDB 是事务型的，可以使用 Commit 和 Rollback 语句。
+        * 并发：MyISAM 只支持表级锁，而 InnoDB 还支持行级锁。
+        * 外键：InnoDB 支持外键。
+        * 备份：InnoDB 支持在线热备份。
+        * 崩溃恢复：MyISAM 崩溃后发生损坏的概率比 InnoDB 高很多，而且恢复的速度也更慢。
+        * 其它特性：MyISAM 支持压缩表和空间数据索引。
+* 数据库相关：https://juejin.cn/post/6883270227078070286
+            https://juejin.cn/post/6869532756498448392
+
+* 秒杀系统
+    * 秒杀系统的问题
+        * 高并发
+        * 超卖
+        * 恶意请求：黄牛
+        * 数据库
+    * 解决
+        * 资源静态化
+        * 秒杀连接加密，随机md5,使url动态化，前端代码获取后端url校验
+        * 库存预热，加入到redis中，事务相关的东西可以依赖redis的事务，LUA，乐观锁等等，这些都能防止超卖
+        * 限流&降级&熔断&隔离：
+        * 流量削峰：消息队列
+        * 分布式事务：2PC，3PC，TCC（https://www.cnblogs.com/jajian/p/10014145.html）等
+
+# 分布式
+* zookeeper：ZooKeeper是一个分布式应用程序协调服务，它包含一个简单的原语集，分布式应用程序可以基于它实现同步服务，配置维护和命名服务等。
+* 基础知识：https://www.cnblogs.com/luxiaoxun/p/4887452.html
+* zk分布式锁：https://juejin.im/post/6844904117563817991
+* 使用场景：
+    * 服务注册与订阅（共用节点）
+    * 分布式通知（监听znode）
+    * 服务命名（znode特性）
+    * 数据订阅、发布（watcher）
+    * 分布式锁（临时节点）
+* 节点类型：
+    * 持久化节点（zk断开节点还在）
+    * 持久化顺序编号目录节点
+    * 临时目录节点（客户端断开后节点就删除了）
+    * 临时目录编号目录节点
+
+# Redis
+* redis分布式锁：https://juejin.cn/post/6844904126288150542
 
 # 海量数据处理 
 
